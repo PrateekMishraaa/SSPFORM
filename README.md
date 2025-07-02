@@ -1,1 +1,2 @@
-nipam-event-backend
+nipam-registration-frontend
+
