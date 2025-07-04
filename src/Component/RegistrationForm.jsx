@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback , useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useFormik } from "formik";
@@ -81,6 +81,9 @@ const MUIRegistrationForm = () => {
   const [expandedStep, setExpandedStep] = useState(0);
   const [selectedMedia, setSelectedMedia] = useState(null);
   
+  const imageInputRef = useRef(null);
+const videoInputRef = useRef(null);
+
 
   const [uploadedImages, setUploadedImages] = useState([]);
   const [uploadedVideos, setUploadedVideos] = useState([]);
@@ -101,13 +104,14 @@ const MUIRegistrationForm = () => {
   const validationSchema = Yup.object({
     schoolName: Yup.string().required("School name is required"),
     teacherName: Yup.string().required("Teacher's name is required"),
-    emailId: Yup.string().required("email Id is required"),
+    email: Yup.string().required("email Id is required"),
     teacherContact: Yup.string().matches(/^\d{10}$/, "Enter a valid 10-digit number").required("Teacher's contact number is required"),
     schoolType: Yup.string().required("School type is required"),
     state: Yup.string().required("State is required"),
     district: Yup.string().required("district is required"),
     address: Yup.string().required("Address is required"),
     pincode: Yup.string().required("Pincode is required"),
+    designation: Yup.string().required("Designation is required"),
     malestudentCount: Yup.number()
       .typeError("Male student count must be a number")
       .min(0, "Value cannot be negative")
@@ -138,12 +142,13 @@ const MUIRegistrationForm = () => {
       schoolName: "",
       teacherName: "",
       teacherContact: "",
-      emailId: "",
+      email: "",
       schoolType: "",
       state: "",
       district: "",
       address: "",
       pincode: "",
+      designation: "",
       malestudentCount: "",
       femalestudentCount: "",
       malestaffCount: "",
@@ -158,40 +163,111 @@ const MUIRegistrationForm = () => {
     validationSchema: validationSchema,
 
 
-  onSubmit: async (values, { resetForm }) => {
+//   onSubmit: async (values, { resetForm }) => {
+//   try {
+//     setLoading(true);
+//     const formData = new FormData();
+//     formData.append("schoolName", values.schoolName);
+//     formData.append("teacherName", values.teacherName);
+//     formData.append("teacherContact", values.teacherContact);
+//     formData.append("emailId", values.emailId);
+//     formData.append("schoolType", values.schoolType);
+//     formData.append("state", values.state);
+//     formData.append("district", values.district);
+//     formData.append("address", values.address);
+//     formData.append("pincode", values.pincode);
+//     formData.append("designation", values.designation);
+//     formData.append("malestudentCount", values.malestudentCount);
+//     formData.append("femalestudentCount", values.femalestudentCount);
+//     formData.append("malestaffCount", values.malestaffCount);
+//     formData.append("femalestaffCount", values.femalestaffCount);
+
+//   const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/register`, formData);
+
+
+
+//     setLoading(false);
+//  Popup("success", "Success", "Participant registered successfully!", 4000);
+
+//     if (response.status === 200) {
+//       resetForm();
+
+//       // ✅ Navigate to Registrationnipamfrom after successful submit
+//      // navigate("/registration-nipam");
+//     }
+//   } catch (error) {
+//     setLoading(false);
+//     Popup("error", "Error", "Something went wrong. Please try again.", 4000);
+//   }
+// },
+
+
+
+
+
+
+
+
+onSubmit: async (values, { resetForm }) => {
   try {
     setLoading(true);
+
+    // ✅ Check if images and videos are uploaded
+    if (uploadedImages.length === 0 || uploadedVideos.length === 0) {
+      Popup("error", "Missing Videos or Images", "Please upload both images and videos before submitting.", 4000);
+      setLoading(false);
+      return;
+    }
+
+    // ✅ Get GPS coordinates
+    const gps = await new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => resolve({
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+        }),
+        () => resolve(null),
+        { enableHighAccuracy: true }
+      );
+    });
+
+    // ✅ Prepare form data
     const formData = new FormData();
     formData.append("schoolName", values.schoolName);
     formData.append("teacherName", values.teacherName);
     formData.append("teacherContact", values.teacherContact);
-    formData.append("emailId", values.emailId);
+    formData.append("email", values.email);
     formData.append("schoolType", values.schoolType);
     formData.append("state", values.state);
     formData.append("district", values.district);
     formData.append("address", values.address);
     formData.append("pincode", values.pincode);
+    formData.append("designation", values.designation);
     formData.append("malestudentCount", values.malestudentCount);
     formData.append("femalestudentCount", values.femalestudentCount);
     formData.append("malestaffCount", values.malestaffCount);
     formData.append("femalestaffCount", values.femalestaffCount);
+    formData.append("gps", JSON.stringify(gps));
 
+    // ✅ Add uploaded files
+    uploadedImages.forEach((file) => formData.append("uploadImage", file));
+    uploadedVideos.forEach((file) => formData.append("uploadVideo", file));
+
+    // ✅ Submit
     const response = await axios.post(
-      `${process.env.REACT_APP_API_BASE_URL}/api/register/email/${schoolmail}/update-form`,
-      formData,
-      {
-        headers: { "Content-Type": "application/json" },
-      }
+      `${process.env.REACT_APP_API_BASE_URL}/api/register`,
+      formData
     );
 
     setLoading(false);
-    Popup("success", "Success", "Moved To Next Page", 4000);
+    Popup("success", "Success", "Participant registered successfully!", 4000);
 
     if (response.status === 200) {
       resetForm();
-
-      // ✅ Navigate to Registrationnipamfrom after successful submit
-      navigate("/registration-nipam");
+      if (imageInputRef.current) imageInputRef.current.value = "";
+      if (videoInputRef.current) videoInputRef.current.value = "";
+      setUploadedImages([]);
+      setUploadedVideos([]);
     }
   } catch (error) {
     setLoading(false);
@@ -204,6 +280,89 @@ const MUIRegistrationForm = () => {
     onReset: () => {
     },
   });
+
+
+  useEffect(() => {
+  const fetchExistingData = async () => {
+    if (!formik.values.email) return;
+
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/api/register/${formik.values.email}`
+      );
+
+      if (response.data.success) {
+        const data = response.data.data;
+
+        // Prefill form fields
+        formik.setValues({
+          ...formik.values, // keep existing values
+          schoolName: data.schoolName || "",
+          teacherName: data.teacherName || "",
+          teacherContact: data.teacherContact || "",
+          email: data.email || "",
+          schoolType: data.schoolType || "",
+          state: data.state || "",
+          district: data.district || "",
+          address: data.address || "",
+          pincode: data.pincode || "",
+          designation: data.designation || "",
+          malestudentCount: data.malestudentCount || "",
+          femalestudentCount: data.femalestudentCount || "",
+          malestaffCount: data.malestaffCount || "",
+          femalestaffCount: data.femalestaffCount || "",
+        });
+
+        // Optionally store GPS separately
+     //   setGps(data.gps || null);
+      }
+    } catch (err) {
+      console.log("No data found for this email or error:", err.message);
+    }
+  };
+
+  fetchExistingData();
+}, [formik.values.email]); // 👈 triggers when email field is updated
+
+
+useEffect(() => {
+  const fetchExistingData = async () => {
+    if (!schoolmail) return; // no email in route
+
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/api/register/${schoolmail}`
+      );
+
+      if (response.data.success) {
+        const data = response.data.data;
+
+        // Prefill form with fetched values
+        formik.setValues({
+          schoolName: data.schoolName || "",
+          teacherName: data.teacherName || "",
+          teacherContact: data.teacherContact || "",
+          email: data.email || "",
+          schoolType: data.schoolType || "",
+          state: data.state || "",
+          district: data.district || "",
+          address: data.address || "",
+          pincode: data.pincode || "",
+          designation: data.designation || "",
+          malestudentCount: data.malestudentCount || "",
+          femalestudentCount: data.femalestudentCount || "",
+          malestaffCount: data.malestaffCount || "",
+          femalestaffCount: data.femalestaffCount || "",
+          gps: data.gps || null, // optional if you're using gps
+        });
+      }
+    } catch (err) {
+      console.log("No data found for this email or error:", err.message);
+    }
+  };
+
+  fetchExistingData();
+}, [schoolmail]); // dependency is the email from route
 
 
   const handleFileUpload = async (e, gps = null) => {
@@ -235,9 +394,8 @@ const MUIRegistrationForm = () => {
     }
     try {
 
-      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/register/email/upload-files/${schoolmail}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/register`, formData);
+
 
       if (response.status === 200) {
   //      alert("Files uploaded successfully");
@@ -246,7 +404,7 @@ const MUIRegistrationForm = () => {
       }
 
     } catch (error) {
-      alert("Upload error: " + (error.response?.data?.message || error.message));
+     // alert("Upload error: " + (error.response?.data?.message || error.message));
     }
   }
 
@@ -258,46 +416,47 @@ const MUIRegistrationForm = () => {
     </>
   );
 
-  // ✅ useCallback with correct dependencies
-  const fetchFormData = useCallback(async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/api/register/email/${schoolmail}`
-      );
-      const data = response.data;
+  // // ✅ useCallback with correct dependencies
+  // const fetchFormData = useCallback(async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `${process.env.REACT_APP_API_BASE_URL}/api/register/email/${schoolmail}`
+  //     );
+  //     const data = response.data;
 
-      formik.setValues({
-        schoolName: data.schoolName || "",
-        teacherName: data.teacherName || "",
-        teacherContact: data.teacherContact || "",
-        emailId: data.emailId || "",
-        schoolType: data.schoolType || "",
-        state: data.state || "",
-        district: data.district || "",
-        address: data.address || "",
-        pincode: data.pincode || "",
-        malestudentCount: data.malestudentCount || "",
-        femalestudentCount: data.femalestudentCount || "",
-        malestaffCount: data.malestaffCount || "",
-        femalestaffCount: data.femalestaffCount || "",
-        schoolMail: data.schoolMail || schoolmail,
-        uploadImage: [],
-        uploadVideo: [],
-        uploadLetter: null,
-        agree: false,
-      });
-    } catch (error) {
-      console.error("Error fetching registration data:", error);
-    }
-  }, [schoolmail, formik]); // ✅ include both dependencies
+  //     formik.setValues({
+  //       schoolName: data.schoolName || "",
+  //       teacherName: data.teacherName || "",
+  //       teacherContact: data.teacherContact || "",
+  //       emailId: data.emailId || "",
+  //       schoolType: data.schoolType || "",
+  //       state: data.state || "",
+  //       district: data.district || "",
+  //       address: data.address || "",
+  //       pincode: data.pincode || "",
+  //       designation: data.designation || "",
+  //       malestudentCount: data.malestudentCount || "",
+  //       femalestudentCount: data.femalestudentCount || "",
+  //       malestaffCount: data.malestaffCount || "",
+  //       femalestaffCount: data.femalestaffCount || "",
+  //       schoolMail: data.schoolMail || schoolmail,
+  //       uploadImage: [],
+  //       uploadVideo: [],
+  //       uploadLetter: null,
+  //       agree: false,
+  //     });
+  //   } catch (error) {
+  //     console.error("Error fetching registration data:", error);
+  //   }
+  // }, [schoolmail, formik]); // ✅ include both dependencies
 
 
-  // ✅ useEffect with correct dependencies
-  useEffect(() => {
-    if (schoolmail) {
-      fetchFormData();
-    }
-  }, [schoolmail]);
+  // // ✅ useEffect with correct dependencies
+  // useEffect(() => {
+  //   if (schoolmail) {
+  //     fetchFormData();
+  //   }
+  // }, [schoolmail]);
 
 
   const handleRemoveVideo = (index) => {
@@ -314,71 +473,71 @@ const MUIRegistrationForm = () => {
     },
 
 
-  {
-  label: 'NIPAM COURSE',
-  description: (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-      {[
-        { title: "Introduction to NIPAM", url: "https://youtu.be/19jtvs3J8rw" },
-        { title: "Course Structure", url: "https://youtube.com/watch?v=Dat9mSaWOTM&feature=shared" },
-        { title: "Introduction to Intellectual Property", url: "https://youtu.be/Gxrm-AizK60" },
-        { title: "Case Studies", url: "https://youtu.be/1tMuslH9Tfc" },
-        { title: "Role of Intellectual Property Rights", url: "https://youtu.be/fJZ0aL3nDzI" },
-      ].map((video, index) => {
-        const getYoutubeId = (url) => {
-          const regExp = /^.*(youtu.be\/|v=|\/v\/|embed\/|watch\?v=)([^#&?]*).*/;
-          const match = url.match(regExp);
-          return match && match[2].length === 11 ? match[2] : null;
-        };
+//   {
+//   label: 'NIPAM COURSE',
+//   description: (
+//     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+//       {[
+//         { title: "Introduction to NIPAM", url: "https://youtu.be/19jtvs3J8rw" },
+//         { title: "Course Structure", url: "https://youtube.com/watch?v=Dat9mSaWOTM&feature=shared" },
+//         { title: "Introduction to Intellectual Property", url: "https://youtu.be/Gxrm-AizK60" },
+//         { title: "Case Studies", url: "https://youtu.be/1tMuslH9Tfc" },
+//         { title: "Role of Intellectual Property Rights", url: "https://youtu.be/fJZ0aL3nDzI" },
+//       ].map((video, index) => {
+//         const getYoutubeId = (url) => {
+//           const regExp = /^.*(youtu.be\/|v=|\/v\/|embed\/|watch\?v=)([^#&?]*).*/;
+//           const match = url.match(regExp);
+//           return match && match[2].length === 11 ? match[2] : null;
+//         };
 
-        const videoId = getYoutubeId(video.url);
-        const thumbnailUrl = videoId
-          ? `https://img.youtube.com/vi/${videoId}/0.jpg`
-          : '';
+//         const videoId = getYoutubeId(video.url);
+//         const thumbnailUrl = videoId
+//           ? `https://img.youtube.com/vi/${videoId}/0.jpg`
+//           : '';
 
-        return (
-          <Box
-            key={index}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-              padding: 1,
-              border: "1px solid #ccc",
-              borderRadius: 2,
-              backgroundColor: "#f9f9f9",
-              "&:hover": {
-                backgroundColor: "#f1f1f1",
-              },
-            }}
-          >
-            {thumbnailUrl && (
-              <img
-                src={thumbnailUrl}
-                alt={video.title}
-                width={100}
-                height={60}
-                style={{ borderRadius: 4 }}
-              />
-            )}
-            <a
-              href={video.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                textDecoration: "none",
-                color: "#2356fe",
-                fontWeight: 500,
-              }}
-            >
-              {video.title}
-            </a>
-          </Box>
-        );
-      })}
-    </Box>
-  ),
-}
+//         return (
+//           <Box
+//             key={index}
+//             sx={{
+//               display: "flex",
+//               alignItems: "center",
+//               gap: 2,
+//               padding: 1,
+//               border: "1px solid #ccc",
+//               borderRadius: 2,
+//               backgroundColor: "#f9f9f9",
+//               "&:hover": {
+//                 backgroundColor: "#f1f1f1",
+//               },
+//             }}
+//           >
+//             {thumbnailUrl && (
+//               <img
+//                 src={thumbnailUrl}
+//                 alt={video.title}
+//                 width={100}
+//                 height={60}
+//                 style={{ borderRadius: 4 }}
+//               />
+//             )}
+//             <a
+//               href={video.url}
+//               target="_blank"
+//               rel="noopener noreferrer"
+//               style={{
+//                 textDecoration: "none",
+//                 color: "#2356fe",
+//                 fontWeight: 500,
+//               }}
+//             >
+//               {video.title}
+//             </a>
+//           </Box>
+//         );
+//       })}
+//     </Box>
+//   ),
+// }
 ,
 
 
@@ -414,30 +573,31 @@ const MUIRegistrationForm = () => {
               }}
               name="uploadImage"
               type="file"
+                ref={imageInputRef}
               id="fileElem-image"
               accept="image/*"
-              onChange={async (event) => {
-                const inputFiles = event.currentTarget.files;
-                if (!inputFiles || inputFiles.length === 0) return;
+          onChange={(event) => {
+  const inputFiles = event.currentTarget.files;
+  if (!inputFiles || inputFiles.length === 0) return;
 
-                const files = Array.from(inputFiles);
-                console.log(files)
-                // Get GPS coordinates
-                const gps = await new Promise((resolve) => {
-                  navigator.geolocation.getCurrentPosition(
-                    (pos) => resolve({
-                      latitude: pos.coords.latitude,
-                      longitude: pos.coords.longitude
-                    }),
-                    () => resolve(null),
-                    { enableHighAccuracy: true }
-                  );
-                });
+  const files = Array.from(inputFiles);
 
-                // Call your existing upload function with files and GPS data
-                handleFileUpload(event, gps);
+  const images = [];
+  const videos = [];
 
-              }}
+  files.forEach((file) => {
+    if (file.type.startsWith("image/")) {
+      images.push(file);
+    } else if (file.type.startsWith("video/")) {
+      videos.push(file);
+    }
+  });
+
+  // Update states
+  setUploadedImages((prev) => [...prev, ...images]);
+  setUploadedVideos((prev) => [...prev, ...videos]);
+}}
+
 
               style={{ width: '100%' }}
 
@@ -594,6 +754,7 @@ const MUIRegistrationForm = () => {
                 display: "none",
               }}
               type="file"
+               ref={videoInputRef}
               name="uploadVideo"
               id="fileElem-video"
               accept="video/*"
@@ -759,7 +920,7 @@ const MUIRegistrationForm = () => {
               ))}
             </Box>
             <Typography variant="h5" gutterBottom textAlign="center">
-              NIPAM COURSE
+              CAQM FORM
             </Typography>
 
             {/* Letter Body */}
@@ -1008,24 +1169,25 @@ const MUIRegistrationForm = () => {
 
                 {/* Contact */}
                 <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    id="emailId"
-                    name="emailId"
-                    label={renderLabel("Email Id")}
-                    value={formik.values.emailId}
-                    onChange={formik.handleChange}
-                    error={formik.touched.emailId && Boolean(formik.errors.emailId)}
-                    helperText={formik.touched.emailId && formik.errors.emailId}
-                    variant="outlined"
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": { borderRadius: "8px" },
-                        "&:hover fieldset": { borderColor: "grey !important" },
-                        "&.Mui-focused fieldset": { borderColor: "grey !important" },
-                      },
-                    }}
-                  />
+                 <TextField
+  fullWidth
+  id="email"                // ✅ corrected
+  name="email"              // ✅ corrected
+  label={renderLabel("Email Id")}
+  value={formik.values.email}
+  onChange={formik.handleChange}
+  error={formik.touched.email && Boolean(formik.errors.email)}
+  helperText={formik.touched.email && formik.errors.email}
+  variant="outlined"
+  sx={{
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": { borderRadius: "8px" },
+      "&:hover fieldset": { borderColor: "grey !important" },
+      "&.Mui-focused fieldset": { borderColor: "grey !important" },
+    },
+  }}
+/>
+
                 </Grid>
 
                 {/* School Name */}
@@ -1218,6 +1380,26 @@ const MUIRegistrationForm = () => {
                     onChange={formik.handleChange}
                     error={formik.touched.pincode && Boolean(formik.errors.pincode)}
                     helperText={formik.touched.pincode && formik.errors.pincode}
+                    variant="outlined"
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": { borderRadius: "8px" },
+                        "&:hover fieldset": { borderColor: "grey !important" },
+                        "&.Mui-focused fieldset": { borderColor: "grey !important" },
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    id="designation"
+                    name="designation"
+                    label={renderLabel("Designation")}
+                    value={formik.values.designation}
+                    onChange={formik.handleChange}
+                    error={formik.touched.designation && Boolean(formik.errors.designation)}
+                    helperText={formik.touched.designation && formik.errors.designation}
                     variant="outlined"
                     sx={{
                       "& .MuiOutlinedInput-root": {
