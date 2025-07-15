@@ -394,11 +394,14 @@ useEffect(() => {
     }
     try {
 
-      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/register`, formData);
+      const response = await axios.post(
+  `${process.env.REACT_APP_API_BASE_URL}/api/register/email/upload-files/${schoolmail}`,
+  formData // Must be constructed with formData.append()
+);
 
 
-      if (response.status === 200) {
-  //      alert("Files uploaded successfully");
+      if (response.status === 201) {
+  //     alert("Files uploaded successfully");
       } else {
    //     alert(`Upload failed: ${response.data.message || "Unknown error"}`);
       }

@@ -101,37 +101,40 @@ const DistrictTable = () => {
     fetchData();
   }, [fetchData]);
 
-  const isAllFilesUploaded = (rowData) => {
-    return (
-      rowData.uploadLetter &&
-      rowData.uploadImage?.length &&
-      rowData.uploadVideo?.length
-    );
-  };
 
-  const getMissingFilesMessage = (rowData) => {
-    const missing = [];
-    if (!rowData.uploadLetter) missing.push("Letter");
-    if (!rowData.uploadImage?.length) missing.push("Images");
-    if (!rowData.uploadVideo?.length) missing.push("Videos");
-    return missing.length
-      ? `Missing: ${missing.join(", ")}`
-      : "All files uploaded";
-  };
 
-  const handleStatusChange = (rowData, newStatus) => {
-    if (newStatus === "accept") {
-      if (!isAllFilesUploaded(rowData)) {
-        alert(`❌ Cannot Accept: ${getMissingFilesMessage(rowData)}`);
-        return;
-      }
-      alert("✅ All files verified! Process completed successfully.");
-    } else {
-      handleWhatsAppClick(rowData.teacherContact, rowData, true);
-      alert("⚠️ Rejected: Please upload missing files and resubmit.");
+ const isAllFilesUploaded = (rowData) => {
+  return (
+    rowData.uploadImage?.length &&
+    rowData.uploadVideo?.length
+  );
+};
+
+const getMissingFilesMessage = (rowData) => {
+  const missing = [];
+  if (!rowData.uploadImage?.length) missing.push("Images");
+  if (!rowData.uploadVideo?.length) missing.push("Videos");
+  return missing.length
+    ? `Missing: ${missing.join(", ")}`
+    : "All files uploaded";
+};
+
+const handleStatusChange = (rowData, newStatus) => {
+  if (newStatus === "accept") {
+    if (!isAllFilesUploaded(rowData)) {
+      alert(`❌ Cannot Accept: ${getMissingFilesMessage(rowData)}`);
+      return;
     }
-    setStatus((prev) => ({ ...prev, [rowData.id]: newStatus }));
-  };
+    alert("✅ All files verified! Process completed successfully.");
+  } else {
+    handleWhatsAppClick(rowData.teacherContact, rowData, true);
+    alert("⚠️ Rejected: Please upload missing files and resubmit.");
+  }
+  setStatus((prev) => ({ ...prev, [rowData.id]: newStatus }));
+};
+
+
+
 
   const handleCallClick = (phoneNumber) => {
     try {
@@ -179,78 +182,71 @@ const DistrictTable = () => {
     }
   };
 
-  const handleWhatsAppClick = (phoneNumber, rowData, isRejection = false) => {
-    try {
-      const missingFiles = [];
-      if (!rowData.uploadLetter) missingFiles.push("Letter");
-      if (!rowData.uploadImage?.length) missingFiles.push("Images");
-      if (!rowData.uploadVideo?.length) missingFiles.push("Videos");
+ const handleWhatsAppClick = (phoneNumber, rowData, isRejection = false) => {
+  try {
+    const missingFiles = [];
+    if (!rowData.uploadImage?.length) missingFiles.push("Images");
+    if (!rowData.uploadVideo?.length) missingFiles.push("Videos");
 
-      let message = "School Program Submission:\n\n";
+    let message = "School Program Submission:\n\n";
 
-      if (isRejection) {
-        // New rejection message format
-        message += "❌ SUBMISSION REJECTED ❌\n\n";
-        message += "Your submission requires corrections:\n\n";
+    if (isRejection) {
+      // Rejection message format
+      message += "❌ SUBMISSION REJECTED ❌\n\n";
+      message += "Your submission requires corrections:\n\n";
 
-        if (missingFiles.length > 0) {
-          message += "MISSING DOCUMENTS:\n";
-          missingFiles.forEach((field) => {
-            if (field === "Letter") {
-              message += "• Confirmation Letter (signed PDF)\n";
-            }
-            if (field === "Images") {
-              message += "• School Program Images (min 3 photos)\n";
-            }
-            if (field === "Videos") {
-              message += "• Program Videos (min 1 video)\n";
-            }
-          });
-          message += "\n";
-        }
-
-        message += "ACTION REQUIRED:\n";
-        message += "1. Please upload all missing documents\n";
-        message += "2. Ensure documents meet requirements\n";
-        message += "3. Resubmit for review\n\n";
-        message += "Need help? Reply to this message.\n";
-      } else {
-        // Keep existing non-rejection message logic
-        if (missingFiles.length === 3) {
-          message += "❌ PENDING: All documents are missing!\n";
-          message +=
-            "Please upload:\n- Confirmation Letter\n- Images\n- Videos";
-        } else if (missingFiles.length > 0) {
-          message += "⚠️ PENDING: Some documents are missing\n\n";
-          missingFiles.forEach((field) => {
-            if (field === "Letter") {
-              message += "• Confirmation Letter is missing (required)\n";
-            }
-            if (field === "Images") {
-              message += "• School Images are missing (required)\n";
-            }
-            if (field === "Videos") {
-              message += "• Program Videos are missing (required)\n";
-            }
-          });
-          message += "\nPlease upload the missing documents.";
-        } else {
-          message += "✅ COMPLETED: All documents received!\n";
-          message += "Thank you for your submission.";
-        }
+      if (missingFiles.length > 0) {
+        message += "MISSING DOCUMENTS:\n";
+        missingFiles.forEach((field) => {
+          if (field === "Images") {
+            message += "• School Program Images (min 3 photos)\n";
+          }
+          if (field === "Videos") {
+            message += "• Program Videos (min 1 video)\n";
+          }
+        });
+        message += "\n";
       }
 
-      const cleanedNumber = phoneNumber
-        .replace(/[^\d+]/g, "")
-        .replace(/^\+/, "");
-      window.open(
-        `https://wa.me/${cleanedNumber}?text=${encodeURIComponent(message)}`,
-        "_blank"
-      );
-    } catch (error) {
-      console.log(error);
+      message += "ACTION REQUIRED:\n";
+      message += "1. Please upload all missing documents\n";
+      message += "2. Ensure documents meet requirements\n";
+      message += "3. Resubmit for review\n\n";
+      message += "Need help? Reply to this message.\n";
+    } else {
+      // Non-rejection messages
+      if (missingFiles.length === 2) {
+        message += "❌ PENDING: Images and Videos are missing!\n";
+        message += "Please upload:\n- Images\n- Videos";
+      } else if (missingFiles.length > 0) {
+        message += "⚠️ PENDING: Some documents are missing\n\n";
+        missingFiles.forEach((field) => {
+          if (field === "Images") {
+            message += "• School Images are missing (required)\n";
+          }
+          if (field === "Videos") {
+            message += "• Program Videos are missing (required)\n";
+          }
+        });
+        message += "\nPlease upload the missing documents.";
+      } else {
+        message += "✅ COMPLETED: All documents received!\n";
+        message += "Thank you for your submission.";
+      }
     }
-  };
+
+    const cleanedNumber = phoneNumber
+      .replace(/[^\d+]/g, "")
+      .replace(/^\+/, "");
+    window.open(
+      `https://wa.me/${cleanedNumber}?text=${encodeURIComponent(message)}`,
+      "_blank"
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 
   const columns = [
     {
@@ -446,128 +442,96 @@ const DistrictTable = () => {
       </>
 
       <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>
-          Files Viewer
-          <IconButton
-            onClick={handleCloseDialog}
-            sx={{ position: "absolute", right: 8, top: 8 }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
+  open={openDialog}
+  onClose={handleCloseDialog}
+  maxWidth="md"
+  fullWidth
+>
+  <DialogTitle>
+    Files Viewer
+    <IconButton
+      onClick={handleCloseDialog}
+      sx={{ position: "absolute", right: 8, top: 8 }}
+    >
+      <CloseIcon />
+    </IconButton>
+  </DialogTitle>
 
-        <DialogContent dividers>
-          <Tabs
-            value={tabIndex}
-            onChange={(e, val) => setTabIndex(val)}
-            centered
-          >
-            <Tab label="Letter" />
-            <Tab label="Images" />
-            <Tab label="Videos" />
-          </Tabs>
+  <DialogContent dividers>
+    <Tabs
+      value={tabIndex}
+      onChange={(e, val) => setTabIndex(val)}
+      centered
+    >
+      <Tab label="Images" />
+      <Tab label="Videos" />
+    </Tabs>
 
-          <TabPanel value={tabIndex} index={0}>
-            {selectedRow?.uploadLetter?.trim() ? (
-              <div
-                style={{
-                  width: "100%",
-                  height: isMobile ? "80vh" : "72vh",
-                  overflow: "hidden",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  padding: isMobile ? "0.5rem" : "1rem",
-                  boxSizing: "border-box",
-                }}
-              >
-                <iframe
-                  src={getFileUrl(selectedRow.uploadLetter)}
-                  title="PDF Viewer"
+    {/* Images Panel - now index 0 */}
+    <TabPanel value={tabIndex} index={0}>
+      {Array.isArray(selectedRow?.uploadImage) &&
+      selectedRow.uploadImage.length > 0 ? (
+        <div
+          style={{
+            display: "grid",
+            gap: "1rem",
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
+          }}
+        >
+          {selectedRow.uploadImage.map(
+            (img, index) =>
+              img?.trim() && (
+                <img
+                  key={index}
+                  src={getFileUrl(img)}
                   style={{
                     width: "100%",
-                    height: "100%",
-                    border: "none",
+                    height: "auto",
+                    borderRadius: "8px",
                   }}
                 />
-              </div>
-            ) : (
-              <p>No letter uploaded.</p>
-            )}
-          </TabPanel>
+              )
+          )}
+        </div>
+      ) : (
+        <p>No images uploaded.</p>
+      )}
+    </TabPanel>
 
+    {/* Videos Panel - now index 1 */}
+    <TabPanel value={tabIndex} index={1}>
+      {Array.isArray(selectedRow?.uploadVideo) &&
+      selectedRow.uploadVideo.length > 0 ? (
+        <div
+          style={{
+            display: "grid",
+            gap: "1rem",
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
+          }}
+        >
+          {selectedRow.uploadVideo.map(
+            (vid, index) =>
+              vid?.trim() && (
+                <video
+                  key={index}
+                  src={getFileUrl(vid)}
+                  controls
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    borderRadius: "8px",
+                  }}
+                />
+              )
+          )}
+        </div>
+      ) : (
+        <p>No videos uploaded.</p>
+      )}
+    </TabPanel>
+  </DialogContent>
+</Dialog>
 
-
-
-
-          <TabPanel value={tabIndex} index={1}>
-            {Array.isArray(selectedRow?.uploadImage) &&
-            selectedRow.uploadImage.length > 0 ? (
-              <div
-                style={{
-                  display: "grid",
-                  gap: "1rem",
-                  gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
-                }}
-              >
-                {selectedRow.uploadImage.map(
-                  (img, index) =>
-                    img?.trim() && (
-                      <img
-                        key={index}
-                        src={getFileUrl(img)}
-                        // alt={Uploaded ${index}}
-                        style={{
-                          width: "100%",
-                          height: "auto",
-                          borderRadius: "8px",
-                        }}
-                      />
-                    )
-                )}
-              </div>
-            ) : (
-              <p>No images uploaded.</p>
-            )}
-          </TabPanel>
-
-          <TabPanel value={tabIndex} index={2}>
-            {Array.isArray(selectedRow?.uploadVideo) &&
-            selectedRow.uploadVideo.length > 0 ? (
-              <div
-                style={{
-                  display: "grid",
-                  gap: "1rem",
-                  gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
-                }}
-              >
-                {selectedRow.uploadVideo.map(
-                  (vid, index) =>
-                    vid?.trim() && (
-                      <video
-                        key={index}
-                        src={getFileUrl(vid)}
-                        controls
-                        style={{
-                          width: "100%",
-                          height: "auto",
-                          borderRadius: "8px",
-                        }}
-                      />
-                    )
-                )}
-              </div>
-            ) : (
-              <p>No videos uploaded.</p>
-            )}
-          </TabPanel>
-        </DialogContent>
-      </Dialog>
 
       <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)}>
         <DialogTitle>Edit Email & Contact</DialogTitle>

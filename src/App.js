@@ -1,4 +1,5 @@
 import "./App.css";
+import ProtectedRoute from "./Component/protectedRoute"; 
 import MUIRegistrationForm from "./Component/RegistrationForm";
 import Registrationnipamform from "./Component/Registrationnipamform";
 // import ConfirmationPage from "./Component/Congratulation";
@@ -13,15 +14,24 @@ import AdminPage from "./Component/Tables/adminPage";
 function App() {
   return (
     <div>
-      <Router>
-        <Routes>
-          <Route path="/:schoolmail" element={<MUIRegistrationForm />} />
-          <Route path="/" element={<MUIRegistrationForm />} />
-          <Route path="/login" element={<Login />} />
-            {/* <Route path="/registration-nipam" element={<Registrationnipamform />} /> */}
-          <Route path="/district" element={<AdminPage />} />
-        </Routes>
-      </Router>
+     <Router>
+  <Routes>
+    <Route path="/:schoolmail" element={<MUIRegistrationForm />} />
+    <Route path="/" element={<Register />} />
+    <Route path="/login" element={<Login />} />
+   
+
+    {/* Protect /district route */}
+    <Route
+      path="/district"
+      element={
+        <ProtectedRoute>
+          <AdminPage />
+        </ProtectedRoute>
+      }
+    />
+  </Routes>
+</Router>
       {/*
 <div style={{ boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" }}>
   <Heading />
