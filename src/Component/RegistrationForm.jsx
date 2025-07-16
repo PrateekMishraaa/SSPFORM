@@ -18,12 +18,17 @@ import {
   Stepper,
   Step,
   StepLabel,
-  // StepContent,
   AccordionDetails,
   Accordion,
   AccordionSummary,
   Modal,
+  Card,
+  CardContent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
 } from "@mui/material";
+
 import Yuva from "./Asset/yuva_logo.png";
 import Ndma from "./Asset/National_Disaster_Management_Authority_Logo.png";
 import bharat from "./Asset/satyamev.jpeg";
@@ -36,6 +41,7 @@ import CameraVideoCapture from "./VideoCapture";
 import VideoPreview from "./preview/videoPreview";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+//import { Card, CardContent } from '@mui/material';
 
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import ConfirmationFormPDF from './ConfirmationFormPDF'; 
@@ -44,6 +50,7 @@ import ConfirmationFormPDF from './ConfirmationFormPDF';
 // import ConfirmationFormPDF from './ConfirmationFormPDF';
 
 
+import PDF1 from './Asset/pdf1.pdf';
 
 import image1 from './Asset/dummyImages/image1.jpg';
 import image2 from './Asset/dummyImages/image2.jpg';
@@ -75,6 +82,7 @@ const dummyVideos = [
 
 const MUIRegistrationForm = () => {
   const navigate = useNavigate();
+const [open, setOpen] = useState(false);
 
   const { schoolmail } = useParams();
   const [isLoading, setLoading] = useState(false);
@@ -88,7 +96,7 @@ const videoInputRef = useRef(null);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [uploadedVideos, setUploadedVideos] = useState([]);
   const [uploadedLetter, setUploadedLetter] = useState(null);
-  const [open, setOpen] = useState(false);
+  const [open1, setOpen1] = useState(false);
   const handleOpen = (item) => {
     const url = item.url || URL.createObjectURL(item.item);
     const type = item.type || item.item.type || '';
@@ -469,82 +477,148 @@ useEffect(() => {
   };
 
   const steps = [
+
     {
       label: 'Details about Program',
       description: `This is a dummy description about the disaster awareness program conducted at your school. Include information such as date, number of participants, type of activities, and any guest speakers involved.
 `,
     },
+  //  {
+  //   label: 'Pledge',
+  //   description: (
+  //     <>
+  //       <Typography variant="h6" gutterBottom>
+  //         Please read the pledge carefully
+  //       </Typography>
 
+  //       <Box
+  //         sx={{
+  //           border: '1px solid #ccc',
+  //           borderRadius: '8px',
+  //           overflow: 'hidden',
+  //           height: '500px',
+  //           mb: 2,
+  //         }}
+  //       >
+  //         <iframe
+  //           src={PDF1}
+  //           title="Pledge PDF"
+  //           width="100%"
+  //           height="100%"
+  //           style={{ border: 'none' }}
+  //         />
+  //       </Box>
+
+  //       {/* Optional checkbox */}
+  //       <Box sx={{ mt: 1 }}>
+  //         <label>
+  //           <input type="checkbox" required style={{ marginRight: 8 }} /> I have read and agree to the pledge
+  //         </label>
+  //       </Box>
+  //     </>
+  //   ),
+  // },
 
 //   {
-//   label: 'NIPAM COURSE',
+//   label: 'Pledge (Card Layout)',
 //   description: (
-//     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-//       {[
-//         { title: "Introduction to NIPAM", url: "https://youtu.be/19jtvs3J8rw" },
-//         { title: "Course Structure", url: "https://youtube.com/watch?v=Dat9mSaWOTM&feature=shared" },
-//         { title: "Introduction to Intellectual Property", url: "https://youtu.be/Gxrm-AizK60" },
-//         { title: "Case Studies", url: "https://youtu.be/1tMuslH9Tfc" },
-//         { title: "Role of Intellectual Property Rights", url: "https://youtu.be/fJZ0aL3nDzI" },
-//       ].map((video, index) => {
-//         const getYoutubeId = (url) => {
-//           const regExp = /^.*(youtu.be\/|v=|\/v\/|embed\/|watch\?v=)([^#&?]*).*/;
-//           const match = url.match(regExp);
-//           return match && match[2].length === 11 ? match[2] : null;
-//         };
+//     <Card sx={{ maxWidth: 500, p: 2, mt: 1 }}>
+//       <CardContent>
+//         <Typography variant="h6">Disaster Awareness Pledge</Typography>
+//         <Typography variant="body2" sx={{ mb: 2 }}>
+//           Download and read the pledge before proceeding.
+//         </Typography>
+//         <Button
+//           variant="contained"
+//           color="success"
+//           component="a"
+//           href={PDF1}
+//           download="Pledge.pdf"
+//         >
+//           Download PDF
+//         </Button>
+//       </CardContent>
+//     </Card>
+//   ),
+// }
 
-//         const videoId = getYoutubeId(video.url);
-//         const thumbnailUrl = videoId
-//           ? `https://img.youtube.com/vi/${videoId}/0.jpg`
-//           : '';
-
-//         return (
-//           <Box
-//             key={index}
-//             sx={{
-//               display: "flex",
-//               alignItems: "center",
-//               gap: 2,
-//               padding: 1,
-//               border: "1px solid #ccc",
-//               borderRadius: 2,
-//               backgroundColor: "#f9f9f9",
-//               "&:hover": {
-//                 backgroundColor: "#f1f1f1",
-//               },
-//             }}
-//           >
-//             {thumbnailUrl && (
-//               <img
-//                 src={thumbnailUrl}
-//                 alt={video.title}
-//                 width={100}
-//                 height={60}
-//                 style={{ borderRadius: 4 }}
-//               />
-//             )}
-//             <a
-//               href={video.url}
-//               target="_blank"
-//               rel="noopener noreferrer"
-//               style={{
-//                 textDecoration: "none",
-//                 color: "#2356fe",
-//                 fontWeight: 500,
-//               }}
-//             >
-//               {video.title}
-//             </a>
-//           </Box>
-//         );
-//       })}
+,
+// {
+//   label: 'Pledge (Open in New Tab)',
+//   description: (
+//     <Box>
+//       <Typography>Please read the pledge by opening it in a new tab.</Typography>
+//       <Button
+//         variant="outlined"
+//         color="secondary"
+//         component="a"
+//         href={PDF1}
+//         target="_blank"
+//         rel="noopener noreferrer"
+//         sx={{ mt: 2 }}
+//       >
+//         View Pledge PDF
+//       </Button>
 //     </Box>
 //   ),
 // }
 ,
+{
+  label: 'Pledge ',
+  description: (
+    <Box>
+      <Typography>Click below to read the pledge .</Typography>
+      <Button
+        variant="outlined"
+        color="info"
+        onClick={() => setOpen1(true)}
+        sx={{ mt: 2 }}
+      >
+        View Pledge
+      </Button>
+
+      <Dialog open={open1} onClose={() => setOpen1(false)} maxWidth="md" fullWidth>
+        <DialogTitle>Pledge PDF</DialogTitle>
+        <DialogContent>
+          <Box sx={{ height: 500 }}>
+            <iframe
+              src={PDF1}
+              width="100%"
+              height="100%"
+              title="Pledge PDF"
+              style={{ border: 'none' }}
+            />
+          </Box>
+        </DialogContent>
+      </Dialog>
+    </Box>
+  ),
+}
+
+,
+// {
+//   label: 'Pledge (Download Button)',
+//   description: (
+//     <Box>
+//       <Typography>Please download and read the pledge.</Typography>
+//       <Button
+//         variant="contained"
+//         color="primary"
+//         component="a"
+//         href={PDF1}
+//         download="Pledge.pdf"
+//         sx={{ mt: 2 }}
+//       >
+//         Download Pledge PDF
+//       </Button>
+//     </Box>
+//   ),
+// }
 
 
+,
 
+  
 
 
     {
