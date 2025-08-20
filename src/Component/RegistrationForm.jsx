@@ -919,7 +919,7 @@ const RegistrationForm = () => {
       appendToFormData(formData);
 
       // Make API call
-      const response = await axios.post("http://localhost:5000/api/registration", formData, {
+      const response = await axios.post("http://localhost:5000/registration", formData, {
         "headers": {
           "Content-Type": "application/json"
         }
@@ -1095,7 +1095,7 @@ const RegistrationForm = () => {
               <p className="font-semibold text-gray-500 mb-3">Principal's Info</p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <input
-                  type="tel"
+                  type="text"
                   name='principalinfo.principalName'
                   value={formData.RolesAndResponsibility[0]?.principalinfo?.principalName || ''}
                   onChange={handleChange}
@@ -1105,7 +1105,7 @@ const RegistrationForm = () => {
                 focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
                 <input
-                  type="tel"
+                  type="text"
                   name='principalinfo.principalPhone'
                   value={formData.RolesAndResponsibility[0]?.principalinfo?.principalPhone || ''}
                   onChange={handleChange}
@@ -1145,7 +1145,7 @@ const RegistrationForm = () => {
                 <div className="flex flex-col w-full sm:flex-1">
                   <label className="text-gray-600 text-sm mb-1">Phone</label>
                   <input
-                    type="tel"
+                    type="text"
                     name="RolesAndResponsibility.0.vicePrincipalinfo.vicePrincipalPhone"
                     value={formData.RolesAndResponsibility[0]?.vicePrincipalinfo?.vicePrincipalPhone || ''}
                     onChange={handleChange}
@@ -1185,7 +1185,7 @@ const RegistrationForm = () => {
                 <div className="flex flex-col w-full sm:flex-1">
                   <label className="text-gray-600 text-sm mb-1">Phone</label>
                   <input
-                    type="tel"
+                    type="text"
                     name="RolesAndResponsibility.0.seniorCoordinate.seniorCoordinatePhone"
                     value={formData.RolesAndResponsibility[0]?.seniorCoordinate?.seniorCoordinatePhone || ''}
                     onChange={handleChange}
@@ -1225,7 +1225,7 @@ const RegistrationForm = () => {
                 <div className="flex flex-col w-full sm:flex-1">
                   <label className="text-gray-600 text-sm mb-1">Phone</label>
                   <input
-                    type="tel"
+                    type="text"
                     name="RolesAndResponsibility.0.scienceTeachers.scienceTeacherPhone"
                     value={formData.RolesAndResponsibility[0]?.scienceTeachers?.scienceTeacherPhone || ''}
                     onChange={handleChange}
@@ -1265,7 +1265,7 @@ const RegistrationForm = () => {
                 <div className="flex flex-col w-full sm:flex-1">
                   <label className="text-gray-600 text-sm mb-1">Phone</label>
                   <input
-                    type="tel"
+                    type="text"
                     name="RolesAndResponsibility.0.labAsistant.labAsistantPhone"
                     value={formData.RolesAndResponsibility[0]?.labAsistant?.labAsistantPhone || ''}
                     onChange={handleChange}
@@ -1305,7 +1305,7 @@ const RegistrationForm = () => {
                 <div className="flex flex-col w-full sm:flex-1">
                   <label className="text-gray-600 text-sm mb-1">Phone</label>
                   <input
-                    type="tel"
+                    type="text"
                     name="RolesAndResponsibility.0.HeadGirlAndBoy.headBoyAndgirlPhone"
                     value={formData.RolesAndResponsibility[0]?.HeadGirlAndBoy?.headBoyAndgirlPhone || ''}
                     onChange={handleChange}
@@ -1346,7 +1346,7 @@ const RegistrationForm = () => {
                 <div className="flex flex-col w-full sm:flex-1">
                   <label className="text-gray-600 text-sm mb-1">Phone</label>
                   <input
-                    type="tel"
+                    type="text"
                     name="RolesAndResponsibility.0.CulturalHeadAndLiteraryCaptain.CulturalHeadAndLiteraryCaptainPhone"
                     value={formData.RolesAndResponsibility[0]?.CulturalHeadAndLiteraryCaptain?.CulturalHeadAndLiteraryCaptainPhone || ''}
                     onChange={handleChange}
@@ -1888,7 +1888,7 @@ const RegistrationForm = () => {
               <input
                 placeholder="(e.g., 987456321)"
                 required
-                type='tel'
+                type='text'
                 name="phone"
                 value={formData.FirstAidReferralDirectory[0]?.phone || ""}
                 onChange={handleChange}
@@ -1981,6 +1981,7 @@ const RegistrationForm = () => {
                       />
                       <input
                         placeholder="Phone Number"
+                        type='text'
                         name="phoneNumber"
                         value={item.phoneNumber || ""}
                         onChange={(e) => handleServiceChange(e, 'primaryHealthCentre', index)}
@@ -3535,7 +3536,7 @@ const RegistrationForm = () => {
               <div className="flex-1">
                 <p className="text-gray-500">Contact No. of Counselors</p>
                 <input
-                  type="tel"
+                  type="text"
                   placeholder="Contact no. of counselors"
                   name='PsychologicalRecovery.0.contactNoOfcounselors'
                   value={formData.PsychologicalRecovery[0]?.contactNoOfcounselors || ''}
