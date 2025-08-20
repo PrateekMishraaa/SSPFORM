@@ -16,7 +16,7 @@ function App() {
     <div>
      <Router>
   <Routes>
-    <Route path="/:schoolmail" element={<MUIRegistrationForm />} />
+    <Route path="/form" element={<MUIRegistrationForm />} />
     <Route path="/" element={<Register />} />
     <Route path="/login" element={<Login />} />
    

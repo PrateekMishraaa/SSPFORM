@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './Register.module.css'; // <-- CSS module import
+import styles from './Register.module.css'; 
+import axios from 'axios';
+
+
+// <-- CSS module import
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -12,24 +16,34 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    try {
-      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/ register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, role, state, district }),
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        alert('Registered successfully. Please login.');
-        navigate('/login');
-      } else {
-        alert(data.message || 'Registration failed');
-      }
-    } catch (error) {
-      console.error('Registration error:', error);
-      alert('Something went wrong');
+  
+try {
+  const res = await axios.post(
+    `${process.env.REACT_APP_API_BASE_URL}/api/auth/register`,
+    {
+      email,
+      password,
+      role,
+      state,
+      district,
+    },
+    {
+      headers: { 'Content-Type': 'application/json' },
     }
+  );
+
+  alert('Registered successfully. Please login.');
+  navigate('/login');
+} catch (error) {
+  console.error('Registration error:', error);
+
+  // Optional: extract error message from server response
+  const message =
+    error.response?.data?.message || 'Registration failed. Please try again.';
+
+  alert(message);
+}
+
   };
 
   return (
