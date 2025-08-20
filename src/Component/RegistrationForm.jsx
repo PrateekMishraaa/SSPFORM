@@ -160,7 +160,9 @@ import {
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom"
+import Loader from "./Loader.jsx"
 const RegistrationForm = () => {
+  const [loading,setLoading] = useState(false);
   const [step, setStep] = useState(0);
   const navigate = useNavigate()
   const [pagination, setPagination] = useState({
@@ -1080,6 +1082,11 @@ const RegistrationForm = () => {
   return (
     <>
 
+    {
+      loading ? (
+        <Loader/>
+      ): ""
+    }
       <div style={{ padding: '20px', maxWidth: '1340px', margin: '0 auto', fontFamily: 'Arial, sans-serif', backgroundColor: '#f5f5f5' }}>
         <form onSubmit={handleSubmit}>
           <h1 className='py-10' style={{ textAlign: 'center', color: '#2f4f4f', fontSize: '28px', fontWeight: 'bold', marginBottom: '30px' }}>
