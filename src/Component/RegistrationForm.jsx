@@ -945,7 +945,7 @@ const RegistrationForm = () => {
 
     } catch (error) {
       console.error('Error submitting form:', error);
-      toast.error("Internal server error")
+      // toast.error("Internal server error")
 
 
     }
