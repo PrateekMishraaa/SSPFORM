@@ -1082,10 +1082,9 @@ const RegistrationForm = () => {
   return (
     <>
 
-    {
-      loading ? (
-        <Loader/>
-      ): (
+   {loading ? (
+        <Loader />
+      ) : (
        <>
          <div style={{ padding: '20px', maxWidth: '1340px', margin: '0 auto', fontFamily: 'Arial, sans-serif', backgroundColor: '#f5f5f5' }}>
         <form onSubmit={handleSubmit}>
