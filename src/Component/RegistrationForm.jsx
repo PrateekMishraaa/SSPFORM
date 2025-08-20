@@ -919,7 +919,7 @@ const RegistrationForm = () => {
       appendToFormData(formData);
 
       // Make API call
-      const response = await axios.post("http://localhost:5000/registration", formData, {
+      const response = await axios.post("https://sspbackend-fcnj.onrender.com/registration", formData, {
         "headers": {
           "Content-Type": "application/json"
         }
@@ -945,6 +945,7 @@ const RegistrationForm = () => {
 
     } catch (error) {
       console.error('Error submitting form:', error);
+      toast.error("Internal server error")
 
 
     }
