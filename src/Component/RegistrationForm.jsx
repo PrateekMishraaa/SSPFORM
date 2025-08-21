@@ -921,7 +921,7 @@ const RegistrationForm = () => {
       appendToFormData(formData);
 
       // Make API call
-      const response = await axios.post("https://sspbackend-fcnj.onrender.com", formData, {
+      const response = await axios.post("https://sspbackend-fcnj.onrender.com/registration", formData, {
         "headers": {
           "Content-Type": "application/json"
         }
