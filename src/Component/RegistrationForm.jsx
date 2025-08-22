@@ -4966,7 +4966,10 @@ console.log(formData)
         }
       })
       console.log("responce data is ",response.data)
-      toast.success("Form submitted successfully")
+      toast.success("Form submitted successfully");
+
+
+      
 
       // setTimeout(() => {
       //   navigate('/')
@@ -8027,18 +8030,16 @@ console.log(formData)
   <div className="flex flex-col items-center mt-8 pt-6 border-t border-gray-200">
   {/* Progress Dots */}
   <div className="flex items-center gap-3 mb-6">
-    {tabs.map((_, index) => (
+    {/* {tabs.map((_, index) => (
       <div
         key={index}
         className={`w-3 h-3 rounded-full transition-colors ${
           index === activeTab ? 'bg-green-500 scale-110' : 'bg-gray-300'
         }`}
       />
-    ))}
-  </div>
-
+    ))} */}
   {/* Navigation Buttons */}
-  <div className="flex gap-98">
+  <div className="flex gap-46 p-4">
     <button
       onClick={() => setActiveTab(Math.max(0, activeTab - 1))}
       disabled={activeTab === 0}
@@ -8063,6 +8064,8 @@ console.log(formData)
       {activeTab === tabs.length - 1 ? '' : 'Next'}
     </button>
   </div>
+  </div>
+
 </div>
 
 </div>
