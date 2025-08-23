@@ -11,6 +11,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Register from "./auth/Register";
 import Login from "./auth/Login";
 import AdminPage from "./Component/Tables/adminPage";
+import EmergencyManagement from "./Pages/EmergencyManagement";
 function App() {
   return (
     <div>
@@ -19,6 +20,7 @@ function App() {
     <Route path="/form" element={<MUIRegistrationForm />} />
     <Route path="/" element={<Register />} />
     <Route path="/login" element={<Login />} />
+    <Route path="/emergency-checklist" element={<EmergencyManagement/>}/>
    
 
     {/* Protect /district route */}

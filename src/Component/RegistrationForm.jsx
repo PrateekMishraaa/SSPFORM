@@ -4626,7 +4626,7 @@ const RegistrationForm = () => {
   });
 
 
-console.log(formData)
+// console.log(formData)
 
   // Mock FilePreview component
    const FilePreview = ({ fileData, onRemove }) => {

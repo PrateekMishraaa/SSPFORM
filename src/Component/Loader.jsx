@@ -4,104 +4,67 @@ import styled from 'styled-components';
 const Loader = () => {
   return (
     <StyledWrapper>
-      <div id="page">
-        <div id="container">
-          <div id="ring" />
-          <div id="ring" />
-          <div id="ring" />
-          <div id="ring" />
-          <div id="h3">loading</div>
-        </div>
-      </div>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" className="loader">
+        <g strokeLinejoin="round" strokeLinecap="round" fillRule="evenodd" fill="none" strokeWidth={1} stroke="none">
+          <line y2={6} x2={24} y1={2} x1={24} />
+          <line transform="translate(34, 6.679) rotate(30) translate(-34, -6.679)" y2="8.679" x2={34} y1="4.679" x1={34} />
+          <line transform="translate(41.321, 14) rotate(60) translate(-41.321, -14)" y2={16} x2="41.321" y1={12} x1="41.321" />
+          <line transform="translate(44, 24) rotate(90) translate(-44, -24)" y2={26} x2={44} y1={22} x1={44} />
+          <line transform="translate(41.321, 34) rotate(120) translate(-41.321, -34)" y2={36} x2="41.321" y1={32} x1="41.321" />
+          <line transform="translate(34, 41.321) rotate(150) translate(-34, -41.321)" y2="43.321" x2={34} y1="39.321" x1={34} />
+          <line transform="translate(24, 44) rotate(180) translate(-24, -44)" y2={46} x2={24} y1={42} x1={24} />
+          <line transform="translate(14, 41.321) rotate(210) translate(-14, -41.321)" y2="43.321" x2={14} y1="39.321" x1={14} />
+          <line transform="translate(6.679, 34) rotate(240) translate(-6.679, -34)" y2={36} x2="6.679" y1={32} x1="6.679" />
+          <line transform="translate(4, 24) rotate(270) translate(-4, -24)" y2={26} x2={4} y1={22} x1={4} />
+          <line transform="translate(6.679, 14) rotate(300) translate(-6.679, -14)" y2={16} x2="6.679" y1={12} x1="6.679" />
+          <line transform="translate(14, 6.679) rotate(330) translate(-14, -6.679)" y2="8.679" x2={14} y1="4.679" x1={14} />
+        </g>
+      </svg>
     </StyledWrapper>
   );
 }
 
 const StyledWrapper = styled.div`
-  #page {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  .loader {
+    width: 28px;
+    height: 28px;
+    transform: rotate(0deg);
+    margin-left:50px;
+    animation: spin 2.4s linear infinite;
   }
 
-  #container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
+  .loader line {
+    stroke: #ffffff; /* White color for better visibility */
+    stroke-width: 4;
+    stroke-linecap: round;
+    opacity: 0.8;
+    stroke-dasharray: 10;
+    stroke-dashoffset: 10;
+    animation: dash 2.4s ease-in-out infinite;
   }
 
-  #h3 {
-    color: rgb(82, 79, 79);
-  }
-
-  #ring {
-    width: 190px;
-    height: 190px;
-    border: 1px solid transparent;
-    border-radius: 50%;
-    position: absolute;
-  }
-
-  #ring:nth-child(1) {
-    border-bottom: 8px solid rgb(240, 42, 230);
-    animation: rotate1 2s linear infinite;
-  }
-
-  @keyframes rotate1 {
-    from {
-      transform: rotateX(50deg) rotateZ(110deg);
+  @keyframes dash {
+    0% {
+      stroke-dashoffset: 10;
+      opacity: 0.8;
     }
-
-    to {
-      transform: rotateX(50deg) rotateZ(470deg);
+    50% {
+      stroke-dashoffset: 0;
+      opacity: 0.4;
+    }
+    100% {
+      stroke-dashoffset: 10;
+      opacity: 0.8;
     }
   }
 
-  #ring:nth-child(2) {
-    border-bottom: 8px solid rgb(240, 19, 67);
-    animation: rotate2 2s linear infinite;
-  }
-
-  @keyframes rotate2 {
-    from {
-      transform: rotateX(20deg) rotateY(50deg) rotateZ(20deg);
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
     }
-
-    to {
-      transform: rotateX(20deg) rotateY(50deg) rotateZ(380deg);
+    100% {
+      transform: rotate(360deg);
     }
-  }
-
-  #ring:nth-child(3) {
-    border-bottom: 8px solid rgb(3, 170, 170);
-    animation: rotate3 2s linear infinite;
-  }
-
-  @keyframes rotate3 {
-    from {
-      transform: rotateX(40deg) rotateY(130deg) rotateZ(450deg);
-    }
-
-    to {
-      transform: rotateX(40deg) rotateY(130deg) rotateZ(90deg);
-    }
-  }
-
-  #ring:nth-child(4) {
-    border-bottom: 8px solid rgb(207, 135, 1);
-    animation: rotate4 2s linear infinite;
-  }
-
-  @keyframes rotate4 {
-    from {
-      transform: rotateX(70deg) rotateZ(270deg);
-    }
-
-    to {
-      transform: rotateX(70deg) rotateZ(630deg);
-    }
-  }
-  /* Improving visualization in light mode */`;
+  }`;
 
 export default Loader;
